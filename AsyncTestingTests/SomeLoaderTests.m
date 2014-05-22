@@ -1,22 +1,22 @@
 //
-//  AsyncTestingTests.m
-//  AsyncTestingTests
+//  SomeLoaderTests.m
+//  AsyncTesting
 //
-//  Created by Anish Basu on 5/21/14.
+//  Created by Anish Basu on 5/22/14.
 //  Copyright (c) 2014 Anish Basu. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>
-#import <XCTAsyncTestCase/XCTAsyncTestCase.h>
+#import <XCAsyncTestCase/XCTestCase+AsyncTesting.h>
 #import "SomeLoader.h"
 
-double const kXCTestWaitTimeout = 5.0;
+double const kXCAsyncTestWaitTimeout = 5.0;
 
-@interface AsyncTestingTests : XCTAsyncTestCase
+@interface SomeLoaderTests : XCTestCase
 @property (nonatomic, strong) SomeLoader *loader;
 @end
 
-@implementation AsyncTestingTests
+@implementation SomeLoaderTests
 
 - (void)setUp
 {
@@ -43,46 +43,42 @@ double const kXCTestWaitTimeout = 5.0;
 
 - (void)testfetchSomeObjects
 {
-    [self prepare];
     [self.loader fetchSomeObjectsWithCompletion:^(NSDictionary *result, NSError *error) {
         XCTAssertNil(error, @"Error returned");
-        [self notify:kXCTUnitWaitStatusSuccess];
+        [self notify:XCTAsyncTestCaseStatusSucceeded];
     }];
     
-    [self waitForStatus:kXCTUnitWaitStatusSuccess timeout:5.0];
+    [self waitForStatus:XCTAsyncTestCaseStatusSucceeded timeout:kXCAsyncTestWaitTimeout];
 }
 
 - (void)testAlwaysFailWithCompletion
 {
-    [self prepare];
     [self.loader alwaysFailWithCompletion:^(NSDictionary *result, NSError *error) {
         XCTAssertNotNil(error, @"Should have returned error");
-        [self notify:kXCTUnitWaitStatusSuccess];
+        [self notify:XCTAsyncTestCaseStatusSucceeded];
     }];
     
-    [self waitForStatus:kXCTUnitWaitStatusSuccess timeout:kXCTestWaitTimeout];
+    [self waitForStatus:XCTAsyncTestCaseStatusSucceeded timeout:kXCAsyncTestWaitTimeout];
 }
 
 - (void)testFetchSomeObjectsWithNotification
 {
-    [self prepare];
     [self.loader fetchSomeObjectsWithCompletion:nil];
-    [self waitForStatus:kXCTUnitWaitStatusSuccess timeout:kXCTestWaitTimeout];
+    [self waitForStatus:XCTAsyncTestCaseStatusSucceeded timeout:kXCAsyncTestWaitTimeout];
 }
+
 
 #pragma mark - NSNotifications
 
 - (void)_apiDidLoad:(NSNotification *)notification
 {
-    [self notify:kXCTUnitWaitStatusSuccess];
+    [self notify:XCTAsyncTestCaseStatusSucceeded];
 }
 
 - (void)_apiDidFail:(NSNotification *)notification
 {
-    [self notify:kXCTUnitWaitStatusSuccess];
+    [self notify:XCTAsyncTestCaseStatusSucceeded];
 }
-
-
 
 
 @end
